@@ -28,7 +28,24 @@ type ChangePassword struct {
 	NewPassword string `json:"newPassword"`
 }
 
+func datamock() {
+	router := gin.Default()
+	api := router.Group("/api")
+	{
+		api.POST("/tokens", func(c *gin.Context) {
+			c.Header("Content-Type", "application/json")
+			c.JSON(http.StatusOK, gin.H{
+				"token":  "holajajasoyuntoken",
+				"name":   "Pepito",
+				"userID": "gato",
+			})
+		})
+	}
+	router.Run(":3001")
+}
+
 func main() {
+	go datamock()
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.Use(static.Serve("/", static.LocalFile("./react-client/build", true)))
