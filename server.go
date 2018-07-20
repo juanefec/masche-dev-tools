@@ -3,22 +3,27 @@ package main
 import (
 	"net/http"
 
-	"github.com/gin-gonic/contrib/static"
-	"github.com/gin-gonic/gin"
-
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
 )
 
 func datamock() {
 	router := gin.Default()
 	api := router.Group("/api")
 	{
-		api.POST("/tokens", func (c *gin.Context) {
-				c.Header("Content-Type", "application/json")
-				c.JSON(http.StatusOK, gin.H{"token": "holajajasoyuntoken", "name": "Pepito", "userID": "gato"})
-		)
+		api.POST("/tokens", func(c *gin.Context) {
+			c.Header("Content-Type", "application/json")
+			c.JSON(http.StatusOK, gin.H{
+				"token":  "holajajasoyuntoken",
+				"name":   "Pepito",
+				"userID": "gato",
+			})
+		})
 	}
 	router.Run(":3001")
 }
@@ -26,7 +31,7 @@ func datamock() {
 func main() {
 	go datamock()
 	router := gin.Default()
-	// Serve frontend static files
+	router.Use(cors.Default())
 	router.Use(static.Serve("/", static.LocalFile("./react-client/build", true)))
 
 	// Setup route group for the API
