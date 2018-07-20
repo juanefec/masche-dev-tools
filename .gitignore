@@ -264,6 +264,6 @@ buck-out/
 .buckversion
 .fakebuckversion
 
-. vscode/
+.vscode/
 
 # End of https://www.gitignore.io/api/reactnative
