@@ -11,7 +11,20 @@ import (
 	"io/ioutil"
 )
 
+func datamock() {
+	router := gin.Default()
+	api := router.Group("/api")
+	{
+		api.POST("/tokens", func (c *gin.Context) {
+				c.Header("Content-Type", "application/json")
+				c.JSON(http.StatusOK, gin.H{"token": "holajajasoyuntoken", "name": "Pepito", "userID": "gato"})
+		)
+	}
+	router.Run(":3001")
+}
+
 func main() {
+	go datamock()
 	router := gin.Default()
 	// Serve frontend static files
 	router.Use(static.Serve("/", static.LocalFile("./react-client/build", true)))
@@ -30,10 +43,11 @@ func main() {
 
 // TokenHandler returns a token as response
 func TokenHandler(c *gin.Context) {
-	body := getToken()
+	token, userID := getToken()
 	c.Header("Content-Type", "application/json")
 	c.JSON(http.StatusOK, gin.H{
-		"token": body,
+		"token":  token,
+		"userId": userID,
 	})
 }
 
@@ -45,14 +59,15 @@ func LikeJoke(c *gin.Context) {
 	})
 }
 
+// Token is the structure that the service resturns
 type Token struct {
 	Name   string
 	Token  string
 	UserID string
 }
 
-func getToken() string {
-	url := "http://webcalldesa02:9300/api/tokens"
+func getToken() (string, string) {
+	url := "http://localhost:3001/api/tokens"
 
 	var jsonStr = []byte(`{"username":"B048151","password":"juan1807"}`)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
@@ -69,5 +84,5 @@ func getToken() string {
 	var token Token
 	body, _ := ioutil.ReadAll(resp.Body)
 	json.Unmarshal(body, &token)
-	return token.Token
+	return token.Token, token.UserID
 }
