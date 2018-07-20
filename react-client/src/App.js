@@ -38,7 +38,7 @@ class App extends Component {
       })
     }).then((responseText) => responseText.json())
     .then((response) => this.setState({
-      token: response
+      token: response.token
     }));
     
     event.preventDefault();
